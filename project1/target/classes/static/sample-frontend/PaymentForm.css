@@ -1,0 +1,93 @@
+/* CSS for the payment form */
+.payment-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+}
+
+.payment-container h2 {
+  margin-top: 0;
+  color: #32325d;
+  font-weight: 600;
+  text-align: center;
+}
+
+.amount-display {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e6ebf1;
+}
+
+.amount-display .amount {
+  font-weight: bold;
+  font-size: 18px;
+  color: #5469d4;
+}
+
+.payment-form {
+  padding-top: 10px;
+}
+
+.form-row {
+  margin-bottom: 20px;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7c93;
+}
+
+.StripeElement {
+  height: 40px;
+  padding: 10px 12px;
+  width: 100%;
+  border-radius: 4px;
+  background-color: white;
+  border: 1px solid #e6ebf1;
+  box-shadow: 0 1px 3px 0 #e6ebf1;
+  transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.payment-button {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: #5469d4;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-button:hover {
+  background-color: #4a5fc1;
+}
+
+.payment-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #e25950;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
