@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Rental Payment</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .payment-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .steps-indicator {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .step-number.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .step-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .step-label.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .section-title {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+        .booking-details {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .payment-method {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-method:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .payment-method.selected {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+        }
+        .method-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #495057;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #3a3a3a;
+        }
+        .header img {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+        .booking-details {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+        .payment-methods .method-option {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-methods .method-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .payment-methods .method-option.selected {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+        }
+        .method-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #495057;
+        }
+        .method-option.selected .method-icon {
+            color: #007bff;
+        }
+        .card-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .card-option {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .card-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .card-option.selected {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+        }
+        .card-option img {
+            height: 40px;
+            margin-bottom: 10px;
+        }
+        .form-section {
+            margin-top: 25px;
+            display: none;
+        }
+        .payment-button {
+            margin-top: 25px;
+            padding: 12px;
+            font-weight: 600;
+        }
+        .confirmation-screen {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .confirmation-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        .success-icon {
+            font-size: 80px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .receipt-details {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        .steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .steps-indicator::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .step.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .step.completed {
+            background-color: #28a745;
+            color: white;
+        }
+        .step-label {
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .step.active .step-label {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container payment-container">        <div class="steps-indicator">
+            <div class="step active" id="step1">
+                1
+                <span class="step-label">Payment Method</span>
+            </div>
+            <div class="step" id="step2">
+                2
+                <span class="step-label">Payment Details</span>
+            </div>
+            <div class="step" id="step3">
+                3
+                <span class="step-label">Confirmation</span>
+            </div>
+            <div class="step" id="step4">
+                4
+                <span class="step-label">Status</span>
+            </div>
+        </div>
+
+        <div class="header">
+            <h2>Complete Your Rental Payment</h2>
+            <p class="text-muted">Secure payment processing for your vehicle rental</p>
+        </div>
+
+        <div class="booking-details">
+            <h4 class="section-title">Booking Information</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Booking #:</strong> <span id="booking-number">BK-12345678</span></p>
+                    <p><strong>Vehicle:</strong> <span id="vehicle-name">SUV - Toyota RAV4</span></p>
+                    <p><strong>Rental Period:</strong> <span id="rental-period">May 10 - May 15, 2025</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Subtotal:</strong> <span id="subtotal">$400.00</span></p>
+                    <p><strong>Taxes & Fees:</strong> <span id="taxes">$48.00</span></p>
+                    <p><strong>Total Amount:</strong> <span id="total-amount" class="font-weight-bold">$448.00</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Payment Method Selection -->
+        <div id="payment-method-section">
+            <h4 class="section-title">Select Payment Method</h4>
+            <div class="payment-methods">
+                <div class="method-option" data-method="card">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-credit-card method-icon"></i>
+                        <div>
+                            <h5 class="mb-1">Credit/Debit Card</h5>
+                            <p class="text-muted mb-0">Pay securely with your credit or debit card</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="method-option" data-method="cash">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-money-bill-wave method-icon"></i>
+                        <div>
+                            <h5 class="mb-1">Cash Payment</h5>
+                            <p class="text-muted mb-0">Pay in cash when you pick up the vehicle</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="continue-to-details" class="btn btn-primary btn-block payment-button" disabled>Continue</button>
+        </div>
+
+        <!-- Step 2: Card Details -->
+        <div id="card-details-section" class="form-section">
+            <h4 class="section-title">Card Details</h4>
+            
+            <div class="card-options">
+                <div class="card-option" data-card="visa">
+                    <img src="https://cdn.iconscout.com/icon/free/png-256/visa-3-226460.png" alt="Visa">
+                    <p>Visa</p>
+                </div>
+                <div class="card-option" data-card="mastercard">
+                    <img src="https://cdn.iconscout.com/icon/free/png-256/mastercard-6-226423.png" alt="Mastercard">
+                    <p>Mastercard</p>
+                </div>
+            </div>
+            
+            <form id="card-form">
+                <div class="form-group">
+                    <label for="card-owner">Card Owner Name</label>
+                    <input type="text" class="form-control" id="card-owner" placeholder="John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="card-number">Card Number</label>
+                    <input type="text" class="form-control" id="card-number" placeholder="Enter 10-digit card number" maxlength="10" required>
+                    <div id="card-number-error" class="error-message">Please enter a valid 10-digit card number</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="card-expiry">Expiry Date</label>
+                            <input type="text" class="form-control" id="card-expiry" placeholder="MM/YY" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="card-cvc">CVC</label>
+                            <input type="text" class="form-control" id="card-cvc" placeholder="4-digit security code" maxlength="4" required>
+                            <div id="cvc-error" class="error-message">Please enter a valid 4-digit CVC</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <button type="button" id="back-to-methods" class="btn btn-outline-secondary">Back</button>
+                    <button type="submit" id="submit-payment" class="btn btn-primary">Make Payment</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Step 3: Confirmation Screen -->
+        <div id="confirmation-section" class="confirmation-screen">
+            <h4 class="mb-4">Confirm Your Payment</h4>
+            <p>Please review your payment details before confirming:</p>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Payment Summary</h5>
+                    <p><strong>Amount:</strong> $448.00</p>
+                    <p><strong>Payment Method:</strong> <span id="confirm-method">Credit Card</span></p>
+                    <p><strong>Card Type:</strong> <span id="confirm-card-type">Visa</span></p>
+                    <p><strong>Card Number:</strong> **** **** <span id="confirm-last-digits">1234</span></p>
+                </div>
+            </div>
+            
+            <div class="confirmation-actions">
+                <button id="edit-payment" class="btn btn-outline-secondary">Edit Details</button>
+                <button id="confirm-payment" class="btn btn-success">Confirm Payment</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Success Screen -->
+        <div id="success-section" class="success-screen">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h3>Payment Successful!</h3>
+            <p>Your vehicle has been booked successfully.</p>
+            
+            <div class="receipt-details">
+                <h5>Payment Receipt</h5>
+                <p><strong>Transaction ID:</strong> <span id="transaction-id">TX123456789</span></p>
+                <p><strong>Date:</strong> <span id="transaction-date">May 10, 2025</span></p>
+                <p><strong>Amount Paid:</strong> <span id="paid-amount">$448.00</span></p>
+                <p><strong>Payment Method:</strong> <span id="payment-method-used">Visa **** 1234</span></p>
+            </div>
+            
+            <p>A confirmation email has been sent to your registered email address.</p>
+            <a href="#" class="btn btn-primary mt-3">Back to Homepage</a>
+        </div>        <!-- Cash Payment Pending Screen -->
+        <div id="cash-success-section" class="success-screen">
+            <i class="fas fa-clock success-icon" style="color: #ffc107;"></i>
+            <h3>Booking Pending</h3>
+            <p>Your vehicle reservation is pending payment.</p>
+            
+            <div class="receipt-details">
+                <h5>Booking Details</h5>
+                <p><strong>Booking ID:</strong> <span id="cash-booking-id">BK-12345678</span></p>
+                <p><strong>Date:</strong> <span id="cash-booking-date">May 10, 2025</span></p>
+                <p><strong>Amount Due at Pickup:</strong> <span id="cash-amount-due">$448.00</span></p>
+                <p><strong>Payment Method:</strong> Cash on Pickup</p>
+                <p><strong>Payment Status:</strong> <span class="text-warning">PENDING</span></p>
+            </div>
+            
+            <p>A booking confirmation email has been sent to your registered email address.</p>
+            <p class="text-warning"><strong>Important:</strong> Your booking will be confirmed only after payment is made at pickup. Please bring the exact amount in cash.</p>
+            <a href="#" class="btn btn-primary mt-3">Back to Homepage</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables to track state
+            let selectedMethod = null;
+            let selectedCard = null;
+            
+            // Elements
+            const methodOptions = document.querySelectorAll('.method-option');
+            const cardOptions = document.querySelectorAll('.card-option');
+            const continueButton = document.getElementById('continue-to-details');
+            const cardDetailsSection = document.getElementById('card-details-section');
+            const methodsSection = document.getElementById('payment-method-section');
+            const confirmationSection = document.getElementById('confirmation-section');
+            const successSection = document.getElementById('success-section');
+            const cashSuccessSection = document.getElementById('cash-success-section');
+            const cardForm = document.getElementById('card-form');
+            
+            // Steps
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const step4 = document.getElementById('step4');
+            
+            // Form fields
+            const cardNumber = document.getElementById('card-number');
+            const cardCvc = document.getElementById('card-cvc');
+            const cardNumberError = document.getElementById('card-number-error');
+            const cvcError = document.getElementById('cvc-error');
+            
+            // Method selection
+            methodOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    methodOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedMethod = this.dataset.method;
+                    continueButton.disabled = false;
+                });
+            });
+            
+            // Card type selection
+            cardOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    cardOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedCard = this.dataset.card;
+                });
+            });
+            
+            // Continue to details button
+            continueButton.addEventListener('click', function() {
+                if (selectedMethod === 'card') {
+                    // Show card details form
+                    methodsSection.style.display = 'none';
+                    cardDetailsSection.style.display = 'block';
+                    
+                    // Update steps
+                    step1.classList.remove('active');
+                    step1.classList.add('completed');
+                    step2.classList.add('active');                } else if (selectedMethod === 'cash') {
+                    // Handle cash payment directly (skip card details)
+                    methodsSection.style.display = 'none';
+                    cashSuccessSection.style.display = 'block';
+                    
+                    // Set current date for the booking
+                    document.getElementById('cash-booking-date').textContent = new Date().toLocaleDateString();
+                    
+                    // Generate a random booking ID
+                    document.getElementById('cash-booking-id').textContent = 'BK-' + Math.floor(Math.random() * 10000000).toString().padStart(8, '0');
+                    
+                    // Update steps
+                    step1.classList.remove('active');
+                    step1.classList.add('completed');
+                    step2.classList.add('completed');
+                    step3.classList.add('completed');
+                    step4.classList.add('active');
+                }
+            });
+            
+            // Back to methods button
+            document.getElementById('back-to-methods').addEventListener('click', function() {
+                cardDetailsSection.style.display = 'none';
+                methodsSection.style.display = 'block';
+                
+                // Update steps
+                step2.classList.remove('active');
+                step1.classList.remove('completed');
+                step1.classList.add('active');
+            });
+            
+            // Validate card number (10 digits)
+            cardNumber.addEventListener('input', function() {
+                if (this.value.length > 0 && (this.value.length !== 10 || !/^\d+$/.test(this.value))) {
+                    cardNumberError.style.display = 'block';
+                } else {
+                    cardNumberError.style.display = 'none';
+                }
+            });
+            
+            // Validate CVC (4 digits)
+            cardCvc.addEventListener('input', function() {
+                if (this.value.length > 0 && (this.value.length !== 4 || !/^\d+$/.test(this.value))) {
+                    cvcError.style.display = 'block';
+                } else {
+                    cvcError.style.display = 'none';
+                }
+            });
+            
+            // Submit payment form
+            cardForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate form
+                if (cardNumber.value.length !== 10 || !/^\d+$/.test(cardNumber.value)) {
+                    cardNumberError.style.display = 'block';
+                    return;
+                }
+                
+                if (cardCvc.value.length !== 4 || !/^\d+$/.test(cardCvc.value)) {
+                    cvcError.style.display = 'block';
+                    return;
+                }
+                
+                if (!selectedCard) {
+                    alert('Please select a card type (Visa or Mastercard)');
+                    return;
+                }
+                
+                // Update confirmation details
+                document.getElementById('confirm-card-type').textContent = 
+                    selectedCard === 'visa' ? 'Visa' : 'Mastercard';
+                document.getElementById('confirm-last-digits').textContent = 
+                    cardNumber.value.substring(6, 10);
+                
+                // Show confirmation screen
+                cardDetailsSection.style.display = 'none';
+                confirmationSection.style.display = 'block';
+                
+                // Update steps
+                step2.classList.remove('active');
+                step2.classList.add('completed');
+                step3.classList.add('active');
+            });
+            
+            // Edit payment details
+            document.getElementById('edit-payment').addEventListener('click', function() {
+                confirmationSection.style.display = 'none';
+                cardDetailsSection.style.display = 'block';
+                
+                // Update steps
+                step3.classList.remove('active');
+                step2.classList.remove('completed');
+                step2.classList.add('active');
+            });
+            
+            // Confirm payment
+            document.getElementById('confirm-payment').addEventListener('click', function() {
+                confirmationSection.style.display = 'none';
+                successSection.style.display = 'block';
+                
+                // Update payment receipt details
+                document.getElementById('transaction-id').textContent = 'TX' + Math.floor(Math.random() * 1000000000);
+                document.getElementById('transaction-date').textContent = new Date().toLocaleDateString();
+                document.getElementById('payment-method-used').textContent = 
+                    (selectedCard === 'visa' ? 'Visa' : 'Mastercard') + ' **** ' + cardNumber.value.substring(6, 10);
+                
+                // Update steps
+                step3.classList.remove('active');
+                step3.classList.add('completed');
+                step4.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+        .booking-details {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+        .payment-methods .form-check {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .payment-methods .form-check-input {
+            margin-top: 0.25rem;
+        }
+        .payment-info {
+            margin-top: 30px;
+        }
+        #card-element {
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        #payment-button {
+            margin-top: 25px;
+            padding: 12px;
+            font-weight: 600;
+            background-color: #007bff;
+        }
+        .payment-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .payment-result.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .payment-result.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container payment-container">
+        <div class="header">
+            <h2>Complete Your Rental Payment</h2>
+            <p class="text-muted">Secure payment processing for your vehicle rental</p>
+        </div>
+
+        <div class="booking-details">
+            <h4 class="section-title">Booking Information</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Booking #:</strong> <span id="booking-number">BK-12345678</span></p>
+                    <p><strong>Vehicle:</strong> <span id="vehicle-name">SUV - Toyota RAV4</span></p>
+                    <p><strong>Rental Period:</strong> <span id="rental-period">May 15 - May 20, 2025</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Subtotal:</strong> <span id="subtotal">$400.00</span></p>
+                    <p><strong>Taxes & Fees:</strong> <span id="taxes">$48.00</span></p>
+                    <p><strong>Total Amount:</strong> <span id="total-amount" class="font-weight-bold">$448.00</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-methods">
+            <h4 class="section-title">Payment Method</h4>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment-method" id="credit-card" checked>
+                <label class="form-check-label" for="credit-card">
+                    Credit / Debit Card
+                </label>
+            </div>
+        </div>
+
+        <div class="payment-info">
+            <form id="payment-form">
+                <div class="form-group">
+                    <label for="card-element">Card Information</label>
+                    <div id="card-element">
+                        <!-- Stripe Card Element will be inserted here -->
+                        <div class="p-3 border rounded">
+                            <p class="text-muted mb-0">Card details input will appear here when integrated with Stripe</p>
+                        </div>
+                    </div>
+                    <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                </div>
+
+                <button id="payment-button" class="btn btn-primary btn-block">Pay $448.00</button>
+            </form>
+        </div>
+
+        <div id="payment-success" class="payment-result success">
+            <h5>Payment Successful!</h5>
+            <p>Your booking has been confirmed. You will receive a confirmation email shortly.</p>
+            <p>Transaction ID: <span id="transaction-id">pi_1234567890</span></p>
+        </div>
+
+        <div id="payment-error" class="payment-result error">
+            <h5>Payment Failed</h5>
+            <p>There was an issue processing your payment. Please try again or use a different payment method.</p>
+            <p>Error: <span id="error-message"></span></p>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // This is a demonstration of how the payment integration would work
+        // In a real implementation, you would replace with actual API calls
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Demo implementation - in a real app, you would integrate with your backend
+            const paymentForm = document.getElementById('payment-form');
+            const paymentButton = document.getElementById('payment-button');
+            const successDiv = document.getElementById('payment-success');
+            const errorDiv = document.getElementById('payment-error');
+            const errorMessage = document.getElementById('error-message');
+            const transactionId = document.getElementById('transaction-id');
+            
+            // Mock booking data - in a real app, this would come from your backend
+            const bookingId = 123;
+            const amount = 448.00;
+            
+            paymentForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Show loading state
+                paymentButton.disabled = true;
+                paymentButton.textContent = 'Processing...';
+                
+                // Simulate payment processing (3 seconds)
+                setTimeout(function() {
+                    // For demo: 80% success rate
+                    const isSuccess = Math.random() < 0.8;
+                    
+                    if (isSuccess) {
+                        // Show success message
+                        successDiv.style.display = 'block';
+                        errorDiv.style.display = 'none';
+                        transactionId.textContent = 'pi_' + Math.random().toString(36).substr(2, 10);
+                    } else {
+                        // Show error message
+                        successDiv.style.display = 'none';
+                        errorDiv.style.display = 'block';
+                        errorMessage.textContent = 'Your card was declined. Please try again with a different payment method.';
+                    }
+                    
+                    // Reset button state
+                    paymentButton.disabled = false;
+                    paymentButton.textContent = 'Pay $448.00';
+                }, 3000);
+            });
+            
+            // Integration notes for developers:
+            // 1. Initialize Stripe with your publishable key
+            // const stripe = Stripe('pk_test_your_stripe_public_key');
+            // const elements = stripe.elements();
+            
+            // 2. Create and mount the Card Element
+            // const cardElement = elements.create('card');
+            // cardElement.mount('#card-element');
+            
+            // 3. Handle form submission and payment intent creation
+            // See the implementation in PaymentForm.js for detailed code
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Rental Payment</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .payment-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .steps-indicator {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .step-number.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .step-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .step-label.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .section-title {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+        .booking-details {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .payment-method {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-method:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .payment-method.selected {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+        }
+        .method-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #495057;
+        }
+        .continue-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        .continue-btn:hover {
+            background-color: #0069d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container payment-container">
+        <div class="steps-indicator">
+            <div class="step">
+                <div class="step-number active">1</div>
+                <div class="step-label active">Payment Method</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-label">Payment Details</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">Confirmation</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-label">Status</div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <h2>Complete Your Rental Payment</h2>
+            <p class="text-muted">Secure payment processing for your vehicle rental</p>
+        </div>
+
+        <div class="booking-details">
+            <h4 class="section-title">Booking Information</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Booking #:</strong> BK-12345678</p>
+                    <p><strong>Vehicle:</strong> SUV - Toyota RAV4</p>
+                    <p><strong>Rental Period:</strong> May 10 - May 15, 2025</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Subtotal:</strong> $400.00</p>
+                    <p><strong>Taxes & Fees:</strong> $48.00</p>
+                    <p><strong>Total Amount:</strong> <strong>$448.00</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h4 class="section-title">Select Payment Method</h4>
+            
+            <div class="payment-method selected" onclick="selectMethod(this, 'card')">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-credit-card method-icon"></i>
+                    <div>
+                        <h5 class="mb-1">Credit/Debit Card</h5>
+                        <p class="text-muted mb-0">Pay securely with your credit or debit card</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-method" onclick="selectMethod(this, 'cash')">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-money-bill-wave method-icon"></i>
+                    <div>
+                        <h5 class="mb-1">Cash Payment</h5>
+                        <p class="text-muted mb-0">Pay in cash when you pick up the vehicle</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="continue-btn mt-4" onclick="continuePayment()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedPaymentMethod = 'card';
+        
+        function selectMethod(element, method) {
+            // Remove selected class from all payment methods
+            const methods = document.querySelectorAll('.payment-method');
+            methods.forEach(m => m.classList.remove('selected'));
+            
+            // Add selected class to clicked method
+            element.classList.add('selected');
+            
+            // Save selected method
+            selectedPaymentMethod = method;
+        }
+        
+        function continuePayment() {
+            // In a real application, this would navigate to the next step
+            if (selectedPaymentMethod === 'card') {
+                alert('Proceeding to card payment details...');
+                // window.location.href = 'card-payment.html';
+            } else {
+                alert('Proceeding to cash payment confirmation...');
+                // window.location.href = 'cash-confirmation.html';
+            }
+        }
+    </script>
+</body>
+</html>
